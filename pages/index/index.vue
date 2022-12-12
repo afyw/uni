@@ -32,29 +32,86 @@
 					<view class="more fr">
 						歌单广场
 					</view>
-					<scroll-view scroll-x="true" class="scroll-view">
-						<view v-for="(item,index) in recommendSongs" class="item" :key="index">
-							<image :src="item.picUrl" mode="" class="img"></image>
-							<view class="desc ellipsis">
-								{{item.name}}
-							</view>
 
-							<view class="count">
-								{{item.playCount}}
-							</view>
+				</view>
+				<scroll-view scroll-x="true" class="scroll-view">
+					<view v-for="(item,index) in recommendSongs" class="item" :key="index">
+						<image :src="item.picUrl" mode="" class="img"></image>
+						<view class="desc ellipsis">
+							{{item.name}}
 						</view>
-					</scroll-view>
+
+						<view class="count">
+							{{item.playCount}}
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+
+			<!-- 新建新歌 -->
+			<view class="song-list">
+				<view class="switch-line flex-box">
+					<view class="flex-box">
+						<view class="switch-item" :class="{on: newType==1}" @click="switchTab(1)">
+							新碟
+						</view>
+						<view class="switch-item" :class="{on: newType==2}" @click="switchTab(2)">
+							新歌
+						</view>
+					</view>
+					<template v-if="newType== 1">
+						<view class="more">
+							更多新歌
+						</view>
+					</template>
+
+					<template v-if="newType== 2">
+						<view class="more">
+							更多新碟
+						</view>
+					</template>
+				</view>
+				<scroll-view scroll-x="true" class="scroll-view">
+					<view class="item" v-for="(item,index) in latestAlbums" :key="index">
+						<image :src="item.picUrl" class="img"></image>
+
+						<view class="desc ellipsis">
+							{{item.name}}
+						</view>
+						<view class="desc ellipsis c9">
+							{{item.artist.name}}
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+
+			<!-- 精选视频 -->
+			<view class="video-list song-list">
+				<view class="tit-bar">
+					精选视频
+					<view class="more fr">
+						更多
+					</view>
+				</view>
+				<view class="video-item" v-for="(item,index) in relatedVideo" :key="index">
+					<image :src="item.coverUrl" mode="" class="img"></image>
+					<view class="desc ellipsis">
+						{{item.title}}
+					</view>
 				</view>
 			</view>
+
+
 		</view>
-	</view>
 	</view>
 </template>
 
 <script>
 	import {
 		GetBanner,
-		GetRecommendSongs
+		GetRecommendSongs,
+		GetTopAlbum,
+		GetRelatedVideo
 	} from '@/apis/index.js'
 	export default {
 		data() {
@@ -73,12 +130,19 @@
 						name: "直播"
 					}
 				],
-				recommendSongs: [] //推荐歌单
+				recommendSongs: [], //推荐歌单
+				latestAlbums: [], //存储新碟
+				latestTempAlbum: [], //临时变量
+				newType: 1, //新碟新歌
+				relatedVideo: [] //精选视频
+
 			}
 		},
 		onLoad() {
 			this.getBanner()
 			this.getRecommendSongs()
+			this.getLatestAlbum()
+			this.getRelatedVideo()
 
 		},
 		methods: {
@@ -106,8 +170,40 @@
 						item.playCount = formatCount(item.playCount);
 					})
 				})
-			}
+			},
+			// 切换新碟新歌
+			switchTab(type) {
+				this.newType = type
+				// 设置截取范围
+				let temp = {
+					s: type == 1 ? 0 : 3,
+					e: type == 1 ? 3 : 6
+				}
+				this.latestAlbums = this.latestTempAlbum.slice(temp.s, temp.e)
+			},
+			// 新碟新歌 
+			getLatestAlbum() {
+				GetTopAlbum().then(res => {
+					// 所有数据暂存临时数据中
+					this.latestTempAlbum = res.albums
+					// 取前三个作为第一类数据展示
+					this.latestAlbums = res.albums.slice(0, 3)
 
+				})
+			},
+
+			// 精选视频
+			getRelatedVideo() {
+				const params = {
+					id: 32154 //根据资源id查询
+				}
+
+				GetRelatedVideo(params).then((res) => {
+					console.log(res)
+					this.relatedVideo = res.data;
+				})
+
+			}
 		}
 	}
 </script>
@@ -323,8 +419,8 @@
 	}
 
 	/*
-		 *平台差异化处理的代码可以放在底部，这样有利于集中管理
-		*/
+			 *平台差异化处理的代码可以放在底部，这样有利于集中管理
+			*/
 	/* #ifdef MP-WEIXIN */
 	.banner {
 		margin-top: 60rpx;

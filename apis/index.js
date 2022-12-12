@@ -19,3 +19,20 @@ export function GetRecommendSongs(data) {
 }
 
 // 新碟新歌
+export function GetTopAlbum(data) {
+	return request.request({
+		url: "/album/newest",
+		method: "GET",
+		data
+	})
+}
+
+
+// 精选视频
+export function GetRelatedVideo(data) {
+	return request.request({
+		url: "/related/allvideo",
+		method: "GET",
+		data
+	})
+}
