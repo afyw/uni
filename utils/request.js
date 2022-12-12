@@ -46,7 +46,6 @@ function request({
 				}
 			},
 			fail: (err) => {
-				console.log("err:", err)
 				uni.showToast({
 					icon: 'none',
 					title: err.errMsg,

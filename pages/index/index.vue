@@ -26,7 +26,7 @@
 			</view>
 
 			<!-- 推荐歌单 -->
-			<view class="song-list">
+			<!-- <view class="song-list">
 				<view class="tit-bar">
 					推荐歌单
 					<view class="more fr">
@@ -46,8 +46,9 @@
 						</view>
 					</view>
 				</scroll-view>
-			</view>
+			</view> -->
 
+			<song-list title="推荐歌单" link="" :list="recommendSongs"></song-list>
 			<!-- 新建新歌 -->
 			<view class="song-list">
 				<view class="switch-line flex-box">
@@ -113,7 +114,12 @@
 		GetTopAlbum,
 		GetRelatedVideo
 	} from '@/apis/index.js'
+
+	import songList from '../../components/songList.vue'
 	export default {
+		components: {
+			songList
+		},
 		data() {
 			return {
 				swiper: [], //轮播
@@ -145,6 +151,11 @@
 			this.getRelatedVideo()
 
 		},
+		onPullDownRefresh() {
+			setTimeout(function() {
+				uni.stopPullDownRefresh()
+			}, 1000)
+		},
 		methods: {
 			// 轮播图
 			getBanner() {
@@ -154,8 +165,10 @@
 			},
 			// 推荐歌单
 			getRecommendSongs() {
-				GetRecommendSongs().then((res) => {
-
+				const params = {
+					limit: 6
+				}
+				GetRecommendSongs(params).then((res) => {
 					// 格式化播放量
 					const formatCount = data => {
 						let tmp = data
