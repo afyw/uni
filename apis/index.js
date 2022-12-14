@@ -36,3 +36,22 @@ export function GetRelatedVideo(data) {
 		data
 	})
 }
+
+
+// 视频页
+// 导航条
+export function GetAllNavList(data) {
+	return request.request({
+		url: "/video/group/list",
+		method: "GET",
+		data
+	})
+}
+
+export function GetNavList(data) {
+	return request.request({
+		url: "/related/allvideo",
+		method: "GET",
+		data
+	})
+}

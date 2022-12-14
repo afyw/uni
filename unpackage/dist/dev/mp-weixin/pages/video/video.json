@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "mescroll-uni": "/components/mescroll-uni/components/mescroll-uni/mescroll-uni"
+  }
+}
